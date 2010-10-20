@@ -10,13 +10,20 @@ ClassDec(
     [Public(), Final()]
     , Id("'''+anon_class_name+'''")
     , None()
-    , None()
+    , Id("object")
     , None()
   )
   , ClassBody())
 '''
     
+class_make_instance = '''NewInstance(
+                          None()
+                        , ClassOrInterfaceType(TypeName(Id("'''+anon_class_name+'''")), None())
+                        , []
+                        , None()
+                        )'''
 
+##Invoke(Class(TypeName(Id(""))), [])
     
 can_add_classdec = ("Block",)
 
@@ -39,8 +46,10 @@ def fix_annonclass(ast):
                         ni.pop()
                       except:
                         break
-                    ni.name = "Id"
-                    ni.append(anon_class_name)
+                      
+                    nblock = aterm.decode(class_make_instance)
+                    ni.name = nblock.name
+                    ni.extend(nblock)
         
     return ast
 
