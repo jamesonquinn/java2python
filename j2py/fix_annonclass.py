@@ -27,29 +27,29 @@ class_make_instance = '''NewInstance(
     
 can_add_classdec = ("Block",)
 
+def MemoryIter(seed, iter):
+    b = seed
+    for i in iter:
+        a, b = b, i
+        yield a, b
+
 @aterm.transformation
 def fix_annonclass(ast):
     for ni in ast.findall('NewInstance'):
         ##print "QQQQ", ni[3]
         if ni[3].name == "Some":
           
-            for p in ni.parents():
+            for pc, p in ni.parents():
                 if p.name in can_add_classdec:
                     #add declaration for anon class
                     cblock = aterm.decode(class_dec)
                     cblock[1].extend(ni[3][0].copy())
-                    p[0].insert(0,cblock)
+                    pc.add_before(cblock)
                     
                     #remove inline declaration
-                    while True:
-                      try:
-                        ni.pop()
-                      except:
-                        break
                       
                     nblock = aterm.decode(class_make_instance)
-                    ni.name = nblock.name
-                    ni.extend(nblock)
+                    ni.replace(nblock)
         
     return ast
 
