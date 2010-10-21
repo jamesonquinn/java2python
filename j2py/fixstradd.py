@@ -17,7 +17,9 @@ therefore, replace str + expr with str + str(expr)
 DEBUG = False
 
 def is_string(e):
-    return (e.name == "Lit" and e[0].name=="String") or e.name == "ToStr"
+    return ((e.name == "Lit" and e[0].name=="String") 
+            or e.name == "ToStr"
+            or (e.name == "Plus" and len(e) == 2 and (is_string(e[0]) or is_string(e[1]))))
 
 def make_string(e):
     return aterm.decode(u"ToStr(%s)" % e.encode())
