@@ -1,3 +1,5 @@
+package test.java2python;
+
 // tests basic class member lookup; python code changes 'x' to 'self.x'
 class Class6 {
     int x = 42;
