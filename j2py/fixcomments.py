@@ -125,7 +125,7 @@ def convert_comments(ast):
                 exp.annotation[1] = convert_comment(exp.annotation[1])
 
     # move comments out of inner constructs
-    not_wanted = ["Case","[]","()"]
+    not_wanted = ["Case","[]","()","ClassDecHead"]
     for exp in ast.walk():
         if isinstance(exp,aterm.ATerm):
             if exp.annotation is not None:
