@@ -42,43 +42,43 @@ compile_and_run() {
 
     local path=$(dirname $1)
     local class=$(basename ${1%.java})
-    pushd $path > /dev/null
+    #pushd $path > /dev/null
 
     #run and compare output
-    if grep -q "main(\s*String" "$class.java"
+    if grep -q "main(\s*String" "$path/$class.java"
     then
 
-        if [[ "$class.java" -nt "$class.class" ]]
+        if [[ "$path/$class.java" -nt "$path/$class.class" ]]
         then
             echo "- compiling java $1 ..."
-            $JAVAC "$class.java"
+            $JAVAC "$path/$class.java"
         fi
 
         #run java
         echo "- running java ... "
         #grep "public static void main" $class.java && \
 
-        if [[ "$class.class" -nt "$class.java.run" ]]
+        if [[ "$path/$class.class" -nt "$path/$class.java.run" ]]
         then
-            java -ea $class > $class.java.run
+            java -ea $path/$class > $path/$class.java.run
         fi
 
         #run python
         echo -n "- running python ... "
         local dst=$class.py
-        $scriptpath/run.py $dst  > $dst.run 2> $logfile.tmp
+        $scriptpath/run.py $path/$dst  > $path/$dst.run 2> $logfile.tmp
         cat $logfile.tmp
-        cat $logfile.tmp >> $dst.run
+        cat $logfile.tmp >> $path/$dst.run
         #cat $logfile.tmp >> $logfile
         rm $logfile.tmp
 
         #compare output
-        ( diff $class.java.run $dst.run && echo "OK" ) ||
+        ( diff $path/$class.java.run $path/$dst.run && echo "OK" ) ||
           ( (echo "Output differs: $1" >> $logfile) && ( echo "Error") \
-            && (diff $class.java.run $dst.run >> $logfile))
+            && (diff $path/$class.java.run $path/$dst.run >> $logfile))
     fi
 
-    popd > /dev/null
+    #popd > /dev/null
 }
 
 
@@ -86,6 +86,8 @@ for src in $(find test -iname "$1*.java" | sort ); do
     echo "## $src ###################################"
     echo "## $src ###################################" >> $logfile
 
+    
+    CLASSPATH=`pwd`
     transform $src
     compile_and_run $src
     echo
