@@ -51,7 +51,10 @@ def argtypeid(a,d=0):
     elif isinstance(a,list):
         return (argtypeid(a[0]),) #TODO: add check, if all types are equal
     else:
-        return type(a)
+        t = type(a)
+        if t == unicode:
+            t = str
+        return t
 
 class init(object):
 
