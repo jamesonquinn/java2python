@@ -159,13 +159,13 @@ class ATerm (list,Encodable):
         if isinstance(new_node,ATerm): new_node.up = up
         
     def add_before(self, new_node, inc = 0):
-        "insert new_node on parent after self. 'inc' only for use in add_after."
+        "insert new_node on parent before self. 'inc' only for use in add_after."
         up = self.up
         up.insert(self.pos() + inc, new_node)
         if isinstance(new_node,ATerm): new_node.up = up
       
     def add_after(self, new_node):
-        "insert new_node on parent before self"
+        "insert new_node on parent after self"
         self.add_before(new_node, 1)
 
     def parents(exp):

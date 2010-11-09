@@ -1,3 +1,5 @@
+
+
 class Vars1 {
     static int a = 100;
     static int b = 2;

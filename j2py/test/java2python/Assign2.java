@@ -11,29 +11,29 @@ class Assign2 {
         System.out.println(y);
 
         y = x++;
-        System.out.println(x);
-        System.out.println(y);
+        System.out.println("postinc'd" + x);
+        System.out.println("postinc'd y " +y);
                 
         y = ++x;
-        System.out.println(x);
-        System.out.println(y);
+        System.out.println("preinc'd" + x);
+        System.out.println("y " +y);
                 
 
         y = x--;
-        System.out.println(x);
-        System.out.println(y);
+        System.out.println("postdec'd" + x);
+        System.out.println("y " +y);
                 
         y = --x;
-        System.out.println(x);
-        System.out.println(y);
+        System.out.println("predec'd" + x);
+        System.out.println("y " +y);
 
         x++; --y;
         System.out.println(x);
-        System.out.println(y);
+        System.out.println("y " +y);
                 
         --y; ++x;
         System.out.println(x);
-        System.out.println(y);
+        System.out.println("y " +y);
         
         x = 10;
         y = 2*(x++);

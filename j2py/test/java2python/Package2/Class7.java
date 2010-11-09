@@ -1,8 +1,8 @@
 
 
-package test.java2python;
+package test.java2python.Package2;
 
-import test.java2python.Class6;
+import test.java2python.Package2.Class6;
 
 // tests basic class member lookup; python code changes 'x' to 'self.x' and 'y' to 'self.y'
 class Class7 extends Class6 {

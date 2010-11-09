@@ -15,6 +15,7 @@ import fix_values
 import rename_methods
 import fix_expressions
 import fix_annonclass
+import fix_cast
 
 
 def run(ast):
@@ -23,11 +24,12 @@ def run(ast):
     fix_expressions.run(ast)
     fixnames.run(ast)
     rename_methods.run(ast)
-    translatepackages.run(ast)
     fixstradd.run(ast)
     addinit.run(ast)
+    #translatepackages.run(ast) #after addinit
     fixenum.run(ast)
     fix_annonclass.run(ast)
+    fix_cast.run(ast)
     fixcomments.run(ast) #run at least after addinit, to have docstrings in first position
 
 if __name__ == '__main__':

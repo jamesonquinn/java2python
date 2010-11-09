@@ -4,7 +4,7 @@
 import aterm
 import sys
 import java_front
-import config
+import j2pyconfig
 import logging
 
 logger = logging.getLogger('j2py.fixcomments')

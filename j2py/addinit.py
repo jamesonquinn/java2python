@@ -170,10 +170,13 @@ def fix_mods(ast):
 
     #interfaces ...
     for idec in ast.findall("InterfaceDec"):
+        methodNames = []
         for i in idec[1]:
             if i.name in ["AbstractMethodDec"]:
                 i[0] = filtered_mods(i[0])
-        idec[0][0].append(ATerm("Id",["@java.interface"]))
+                methodNames.append(i[3][0])
+        nameStr = ",".join(['"'+s+'"' for s in methodNames])
+        idec[0][0].append(ATerm("Id",["@java.interface(%s)" % nameStr]))
 
 def add_typed(ast):
     #print "add typed"

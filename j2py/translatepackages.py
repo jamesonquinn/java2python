@@ -5,7 +5,7 @@ import aterm
 import sys
 import yaml
 import os
-from config import config
+from j2pyconfig import config
 import simplify
 
 """
@@ -45,6 +45,30 @@ def translate_packages(ast):
                 if DEBUG:
                     print pkg,"-->",p[0][0]
                     print " ",p
+        
+        #import a second time so fully-qualified name works too
+        reimport = aterm.decode('Id("import %s")' % pkg)
+        p.add_after(reimport)
+        reimport.add_after(aterm.decode('Id("java_module(%s)")' % pkg))
+        
+    for p in ast.findall("PackageDec"):
+        packagePath = '.'.join([id[0] for id in p[1][0]])
+        packagePath = rename_pkg(packagePath)
+        baseName = packagePath.split(".")[0]
+        
+        parents = [p for p in p.parents()]
+        if parents[0].name == "Some":
+            putafter = parents[0]
+        else:
+            putafter = p
+        for q in ast.findall(("TypeImportOnDemandDec", "TypeImportDec")):
+            putafter = q.up
+            
+        up = putafter.up
+        after = up[putafter.pos()+1]
+        after.append(aterm.decode(r'Id("java.set_this_package(\"%s\")")' % packagePath)) 
+        #actually, add_before with inc of 2 is really add 2 after.
+        
 
 run = translate_packages
 

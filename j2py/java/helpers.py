@@ -55,3 +55,51 @@ class synchronize(object):
         #print "__exit__",a
         pass
 
+def java_module(module):
+    """Replaces submodules of the given module with their main classes, 
+    so that e.g. com.someorg.someclass.someclass (the class) is accessible at 
+    com.someorg.someclass (where python would put the module). 
+    
+    This is a blatant monkeypatch but it works."""
+    
+    for name in dir(module):
+        if name[0:2] != '__':
+            sub = module.__getattribute__(name)
+            if isinstance(sub,type(module)):
+                try:
+                    module.__setattr__(name,sub.__getattribute__(name))
+                except AttributeError:
+                    pass
+                    
+class ThisPackage(object):
+    """If SomeClass is in globals(), then thispackage.x.y.z.SomeClass == SomeClass
+    
+    This is an even dirtier monkeypatch than the previous"""
+    def __getattr__(self,name):
+        g = globals()
+        if name in g:
+            return g[name]
+        else:
+            return self
+        
+def set_this_package(pathstr):
+    """Put a ThisPackage instance at the first point in pathstr which is still undefined"""
+    path = pathstr.split('.')
+    pterm, path = path[0], path[1:]
+    if pterm not in globals():
+        #TODO: check if this works in pyjamas - figure a fix if it doesn't. 
+        #(It's valid python but might not translate well into javascript)
+        globals()[pterm] = ThisPackage()
+        return
+    here = globals()[pterm]
+    for pterm in path:
+        new_here = getattr(here, pterm, None)
+        if new_here is None:
+            here.__setattr__(pterm, ThisPackage())
+            return
+        here = new_here
+        
+    #If we get here, there are imports from the same package.
+    #So, we must monkeypatch the package to act like ThisPackage.
+    #This is the dirtiest monkeypatch of all.
+    here.__getattr__ = ThisPackage.__getattr__

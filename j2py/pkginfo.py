@@ -4,7 +4,7 @@
 import aterm
 import simplify, pythonize
 import sys, os.path
-from config import logger
+from j2pyconfig import logger
 
 from java_front import parse_java,pp_aterm
 

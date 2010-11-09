@@ -28,11 +28,39 @@ def public(f):
 def constructor(func):
     return func
 
-def interface(c):
-    return c
+def interface(*methodNames):
+    def rememberMethods(c):
+        c.__nummethods__ = len(methodNames)
+        c.__methodnames__ = methodNames
+        return c
+    return rememberMethods
+
+class dummyClass(object):
+  pass
+
+def makeNewFun(f,pos,t):
+    """Return a verson of f which can take a function as argument number pos, 
+    by putting it as the method of an object of interface t"""
+    def newFun(*args):
+        if len(args) > pos and callable(args[pos+1]): # pos+1 because "self" is at 0
+            newargs = list(args)
+            dummyO = dummyClass()
+            dummyO.__setattr__(t.__methodnames__[0],args[pos+1])
+            newargs[pos+1] = dummyO
+            return f(*newargs)
+        else:
+            return f(*args)
+    return newFun
 
 def typed(*sig):
     def add_sig(f):
+        #functions whose signature includes a one-method interface should accept a function there too;
+        #it's more pythonic that way
+        for pos,t in enumerate(sig):
+            if hasattr(t,"__nummethods__") and t.__nummethods__ == 1:
+                f = makeNewFun(f,pos,t)
+                
+        #now just note the type signature
         f._type_sig = sig
         return f
     return add_sig
@@ -207,7 +235,10 @@ class overloaded(object):
         key = argtypeid(a)
         func = self.registry.get(key,None)
         if func is not None:
-            return func(self.self,*a)
+            if self.self is not None:
+                return func(self.self,*a)
+            else:
+                return func(*a)
         else:
             raise RuntimeError("no function for signature " + str(key))
 
